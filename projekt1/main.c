@@ -30,45 +30,28 @@ bool v(){
     return true;
 }
 
-void o(){
+void o(char ***diagnozy){
     FILE *zaznamyText;
     zaznamyText = fopen("C:\\Users\\Fimas\\CLionProjects\\projekt1\\pacienti.txt", "r");
     char *line=(char*) calloc(20, sizeof(char));
     long long int datumNacitNeskor,datumNacitSkor;
     long long int datum;
     char *strol;
-    char **diagnozy = calloc(1,sizeof(char*));
+    *diagnozy = calloc(1,sizeof(char*));
     int sizeOfDiagnozy = 1;
-    diagnozy[0] = calloc(3,sizeof(char));
-    
-    printf("nacitajte 2 datumy\n");
-    datumNacitNeskor=20200417;
-    datumNacitSkor=20190703;
+    (*diagnozy)[0] = calloc(3,sizeof(char));
 
-    if (datumNacitNeskor<datumNacitSkor){
-        long long int pohar;
-        pohar= datumNacitNeskor;
-        datumNacitNeskor=datumNacitSkor;
-        datumNacitSkor=pohar;
-    }
+    printf("nacitajte datum\n");
+    scanf("%lld",&datumNacitNeskor);
 
-    do {
-        for (int i = 0; i < 6; ++i) {
-            fgets(line, 20, zaznamyText);
-        }
-        line[(int )strlen(line)-1]="\0";
-        datum=strtoll(line,&strol,10);
-        fgets(line, 20, zaznamyText);
-    }
-    while (datum != datumNacitSkor);
     do {
         for (int i = 0; i < 2; ++i) {
             fgets(line, 20, zaznamyText);
         }
         fgets(line, 20, zaznamyText);
-        strcpy(diagnozy[sizeOfDiagnozy-1],line);
-        diagnozy = realloc(diagnozy,sizeof(char*)*(sizeOfDiagnozy+1));
-        diagnozy[sizeOfDiagnozy] = calloc(3,sizeof(char));
+        strcpy((*diagnozy)[sizeOfDiagnozy-1],line);
+        *diagnozy = realloc(*diagnozy,sizeof(char*)*(sizeOfDiagnozy+1));
+        (*diagnozy)[sizeOfDiagnozy] = calloc(3,sizeof(char));
         sizeOfDiagnozy++;
         for (int i = 0; i < 3; ++i) {
             fgets(line, 20, zaznamyText);
@@ -77,22 +60,40 @@ void o(){
         datum=strtoll(line,&strol,10);
     }
     while ((datum < datumNacitNeskor) && (fgets(line, 20, zaznamyText) != NULL));
-
+    int pocetNajvecsi =1;
+    int pocet=1;
+    int indexNaj=0;
     for (int i = 0; i < sizeOfDiagnozy-1; ++i) {
-        printf("%s",diagnozy[i]);
+        for (int j = 0; j < sizeOfDiagnozy-1; ++j) {
+            if (strcmp((*diagnozy)[i],(*diagnozy)[j])==0){
+                pocet++;
+            }
+        }
+        if (pocetNajvecsi<pocet){
+            pocetNajvecsi=pocet;
+            indexNaj=i;
+        }
+        pocet=1;
     }
-
+    printf("Najcastejšie vysetrovana diagnoza do %lld je %s.",datumNacitNeskor,(*diagnozy)[indexNaj]);
 }
 
 int main(){
+    char **mena;
+    long long int *rodneCislo;
+    char **diagnoza;
+    char **vysetrenie;
+    float **vysledok;
+    long int *datum;
     while (true){
         char vstup;
-        scanf("%c\n",&vstup);
+        scanf("%c",&vstup);
         if (vstup=='v'){
             if (v()==false)break;
         }
         if (vstup=='o'){
-            o();
+            o(&diagnoza);
+            printf("%s",diagnoza[0]);
         }
         if (vstup=='k'){
             break;

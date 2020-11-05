@@ -125,49 +125,49 @@ void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vyset
                 *datum = realloc(*datum,sizeof(long int)*(*pocetZaznamov));
             }
             fgets(line, 20, *zaznamyText);
-            line[(int )strlen(line)-1]="\0";
+            line[(int)strlen(line)-1]='\0';
             strcpy((*mena)[(*pocetZaznamov)-1],line);
 
             fgets(line, 20, *zaznamyText);
-            line[(int )strlen(line)-1]="\0";
+            line[(int )strlen(line)-1]='\0';
             (*rodneCislo)[(*pocetZaznamov)-1]=strtoll(line,&strol,10);
 
             fgets(line, 20, *zaznamyText);
-            line[(int )strlen(line)-1]="\0";
+            line[(int )strlen(line)-1]='\0';
             strcpy((*diagnoza)[(*pocetZaznamov)-1],line);
 
             fgets(line, 20, *zaznamyText);
-            line[(int )strlen(line)-1]="\0";
+            line[(int )strlen(line)-1]='\0';
             strcpy((*vysetrenie)[(*pocetZaznamov)-1],line);
 
             fgets(line, 20, *zaznamyText);
-            line[(int )strlen(line)-1]="\0";
+            line[(int )strlen(line)-1]='\0';
             (*vysledok)[(*pocetZaznamov)-1]=strtof(line,&strof);
 
             fgets(line, 20, *zaznamyText);
-            line[(int )strlen(line)-1]="\0";
+            line[(int )strlen(line)-1]='\0';
             (*datum)[(*pocetZaznamov)-1]=strtol(line,&strol,10);
         }
         while (fgets(line, 20, *zaznamyText)!=NULL);
         *jeAlokovane=true;
-//    for (int i = 0; i < (*pocetZaznamov); ++i) {
-//        printf("%s\n",(*mena)[i]);
-//    }
-//    for (int i = 0; i < (*pocetZaznamov); ++i) {
-//        printf("%lld\n",(*rodneCislo)[i]);
-//    }
-//    for (int i = 0; i < (*pocetZaznamov); ++i) {
-//        printf("%s\n",(*diagnoza)[i]);
-//    }
-//    for (int i = 0; i < (*pocetZaznamov); ++i) {
-//        printf("%s\n",(*vysetrenie)[i]);
-//    }
-//    for (int i = 0; i < (*pocetZaznamov); ++i) {
-//        printf("%f\n",(*vysledok)[i]);
-//    }
-//    for (int i = 0; i < (*pocetZaznamov); ++i) {
-//        printf("%ld\n",(*datum)[i]);
-//    }
+    for (int i = 0; i < (*pocetZaznamov); ++i) {
+        printf("%s\n",(*mena)[i]);
+    }
+    for (int i = 0; i < (*pocetZaznamov); ++i) {
+        printf("%lld\n",(*rodneCislo)[i]);
+    }
+    for (int i = 0; i < (*pocetZaznamov); ++i) {
+        printf("%s\n",(*diagnoza)[i]);
+    }
+    for (int i = 0; i < (*pocetZaznamov); ++i) {
+        printf("%s\n",(*vysetrenie)[i]);
+    }
+    for (int i = 0; i < (*pocetZaznamov); ++i) {
+        printf("%f\n",(*vysledok)[i]);
+    }
+    for (int i = 0; i < (*pocetZaznamov); ++i) {
+        printf("%ld\n",(*datum)[i]);
+    }
 
 }
 

@@ -81,7 +81,7 @@ void o(char ***diagnozy,FILE **zaznamyText){
     printf("Najcastejšie vysetrovana diagnoza do %lld je %s.",datumNacitNeskor,(*diagnozy)[indexNaj]);
 }
 
-void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vysetrenie, float **vysledok, long int **datum, FILE **zaznamyText){
+void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vysetrenie, float **vysledok, long int **datum, FILE **zaznamyText,int *pocetZaznamov,bool *jeAlokovane){
     if (*zaznamyText == NULL) {
         printf("Prikaz v nebol vykonany");
         return;
@@ -89,7 +89,7 @@ void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vyset
     else{
         rewind(*zaznamyText);
     }
-    if (*mena!=0x45){
+    if (jeAlokovane){
         free(*mena);
         free(*rodneCislo);
         free(*diagnoza);
@@ -107,69 +107,98 @@ void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vyset
     *vysledok= calloc(1,sizeof(float));
     *datum= calloc(1,sizeof(long int));
 
-    int pocetZaznamov=0;
+    *pocetZaznamov=0;
         char *line = calloc(50,sizeof(char));
         char *strol;
         char *strof;
         do {
-            pocetZaznamov++;
-            if (pocetZaznamov!=1){
-                *mena = realloc(*mena,sizeof(char*)*(pocetZaznamov));
-                (*mena)[pocetZaznamov-1] = calloc(50,sizeof(char));
-                *rodneCislo = realloc(*rodneCislo,sizeof(long long int)*(pocetZaznamov));
-                *diagnoza = realloc(*diagnoza,sizeof(char*)*(pocetZaznamov));
-                (*diagnoza)[pocetZaznamov-1] = calloc(3,sizeof(char));
-                *vysetrenie = realloc(*vysetrenie,sizeof(char*)*(pocetZaznamov));
-                (*vysetrenie)[pocetZaznamov-1] = calloc(50,sizeof(char));
-                *vysledok = realloc(*vysledok,sizeof(float)*(pocetZaznamov));
-                *datum = realloc(*datum,sizeof(long int)*(pocetZaznamov));
+            (*pocetZaznamov)++;
+            if (*pocetZaznamov!=1){
+                *mena = realloc(*mena,sizeof(char*)*((*pocetZaznamov)));
+                (*mena)[(*pocetZaznamov)-1] = calloc(50,sizeof(char));
+                *rodneCislo = realloc(*rodneCislo,sizeof(long long int)*(*pocetZaznamov));
+                *diagnoza = realloc(*diagnoza,sizeof(char*)*(*pocetZaznamov));
+                (*diagnoza)[(*pocetZaznamov)-1] = calloc(3,sizeof(char));
+                *vysetrenie = realloc(*vysetrenie,sizeof(char*)*(*pocetZaznamov));
+                (*vysetrenie)[(*pocetZaznamov)-1] = calloc(50,sizeof(char));
+                *vysledok = realloc(*vysledok,sizeof(float)*(*pocetZaznamov));
+                *datum = realloc(*datum,sizeof(long int)*(*pocetZaznamov));
             }
             fgets(line, 20, *zaznamyText);
             line[(int )strlen(line)-1]="\0";
-            strcpy((*mena)[pocetZaznamov-1],line);
+            strcpy((*mena)[(*pocetZaznamov)-1],line);
 
             fgets(line, 20, *zaznamyText);
             line[(int )strlen(line)-1]="\0";
-            (*rodneCislo)[pocetZaznamov-1]=strtoll(line,&strol,10);
+            (*rodneCislo)[(*pocetZaznamov)-1]=strtoll(line,&strol,10);
 
             fgets(line, 20, *zaznamyText);
             line[(int )strlen(line)-1]="\0";
-            strcpy((*diagnoza)[pocetZaznamov-1],line);
+            strcpy((*diagnoza)[(*pocetZaznamov)-1],line);
 
             fgets(line, 20, *zaznamyText);
             line[(int )strlen(line)-1]="\0";
-            strcpy((*vysetrenie)[pocetZaznamov-1],line);
+            strcpy((*vysetrenie)[(*pocetZaznamov)-1],line);
 
             fgets(line, 20, *zaznamyText);
             line[(int )strlen(line)-1]="\0";
-            (*vysledok)[pocetZaznamov-1]=strtof(line,&strof);
+            (*vysledok)[(*pocetZaznamov)-1]=strtof(line,&strof);
 
             fgets(line, 20, *zaznamyText);
             line[(int )strlen(line)-1]="\0";
-            (*datum)[pocetZaznamov-1]=strtol(line,&strol,10);
+            (*datum)[(*pocetZaznamov)-1]=strtol(line,&strol,10);
         }
         while (fgets(line, 20, *zaznamyText)!=NULL);
-    for (int i = 0; i < pocetZaznamov; ++i) {
-        printf("%s\n",(*mena)[i]);
-    }
-    for (int i = 0; i < pocetZaznamov; ++i) {
-        printf("%lld\n",(*rodneCislo)[i]);
-    }
-    for (int i = 0; i < pocetZaznamov; ++i) {
-        printf("%s\n",(*diagnoza)[i]);
-    }
-    for (int i = 0; i < pocetZaznamov; ++i) {
-        printf("%s\n",(*vysetrenie)[i]);
-    }
-    for (int i = 0; i < pocetZaznamov; ++i) {
-        printf("%f\n",(*vysledok)[i]);
-    }
-    for (int i = 0; i < pocetZaznamov; ++i) {
-        printf("%ld\n",(*datum)[i]);
-    }
+        *jeAlokovane=true;
+//    for (int i = 0; i < (*pocetZaznamov); ++i) {
+//        printf("%s\n",(*mena)[i]);
+//    }
+//    for (int i = 0; i < (*pocetZaznamov); ++i) {
+//        printf("%lld\n",(*rodneCislo)[i]);
+//    }
+//    for (int i = 0; i < (*pocetZaznamov); ++i) {
+//        printf("%s\n",(*diagnoza)[i]);
+//    }
+//    for (int i = 0; i < (*pocetZaznamov); ++i) {
+//        printf("%s\n",(*vysetrenie)[i]);
+//    }
+//    for (int i = 0; i < (*pocetZaznamov); ++i) {
+//        printf("%f\n",(*vysledok)[i]);
+//    }
+//    for (int i = 0; i < (*pocetZaznamov); ++i) {
+//        printf("%ld\n",(*datum)[i]);
+//    }
 
 }
 
+void s(char ***vysetrenie,float **vysledok,long long **rodneCislo,int *pocetZaznamov,bool *jeAlokovane){
+    int *rIndexy=calloc(1,sizeof(int));
+    int pocetIndexov=0;
+    if (!(*jeAlokovane)){
+        printf("Polia nie su vytvorene");
+        return;
+    }
+    else{
+        long long int rCislo;
+        printf("Nacitajte rodne cislo\n");
+        scanf("%lld",&rCislo);
+        for (int i = 0; i < (*pocetZaznamov); ++i) {
+            if ((*rodneCislo)[i]==rCislo){
+                pocetIndexov++;
+                rIndexy[pocetIndexov-1]=i;
+                rIndexy=realloc(rIndexy,sizeof(int)*(pocetIndexov+1));
+            }
+        }
+        if (pocetIndexov==0){
+            printf("Nenasiel sa zadany index");
+            return;
+        }
+        printf("Vysledky vysetreni, ktore boli vykonane pacientovi s rodnym cislom %lld su nasledovne:\n", rCislo);
+        for (int i = 0; i < pocetIndexov; ++i) {
+            printf("%s : %0.2f \n",(*vysetrenie)[rIndexy[i]],(*vysledok)[rIndexy[i]]);
+        }
+    }
+}
 
 
 
@@ -181,8 +210,11 @@ int main(){
     char **vysetrenie;
     float *vysledok;
     long int *datum;
+    int pocetZaznamov;
+    bool jeAlokovane=false;
     while (true){
         char vstup;
+        printf("\nNacitajte prikaz\n");
         scanf("%c",&vstup);
         if (vstup=='v'){
             if (v(&zaznamyText)==false)break;
@@ -191,7 +223,10 @@ int main(){
             o(&diagnoza,&zaznamyText);
         }
         if (vstup=='n'){
-            n(&mena,&rodneCislo,&diagnoza,&vysetrenie,&vysledok,&datum,&zaznamyText);
+            n(&mena,&rodneCislo,&diagnoza,&vysetrenie,&vysledok,&datum,&zaznamyText,&pocetZaznamov,&jeAlokovane);
+        }
+        if (vstup=='s'){
+            s(&vysetrenie,&vysledok,&rodneCislo,&pocetZaznamov,&jeAlokovane);
         }
         if (vstup=='k'){
             break;

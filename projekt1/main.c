@@ -81,7 +81,7 @@ void o(char ***diagnozy,FILE **zaznamyText){
     printf("Najcastejšie vysetrovana diagnoza do %lld je %s.",datumNacitNeskor,(*diagnozy)[indexNaj]);
 }
 
-void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vysetrenie, float **vysledok, long int **datum, FILE **zaznamyText,int *pocetZaznamov,bool *jeAlokovane){
+void n(char ***mena, char ***rodneCislo, char ***diagnoza, char ***vysetrenie, float **vysledok, long int **datum, FILE **zaznamyText,int *pocetZaznamov,bool *jeAlokovane){
     if (*zaznamyText == NULL) {
         printf("Prikaz v nebol vykonany");
         return;
@@ -99,7 +99,8 @@ void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vyset
     }
     *mena = calloc(1,sizeof(char*));
     (*mena)[0]=calloc(50,sizeof(char));
-    *rodneCislo= calloc(1,sizeof(long long int));
+    *rodneCislo= calloc(1,sizeof(char*));
+    (*rodneCislo)[0]=calloc(11,sizeof(char));
     *diagnoza= calloc(1,sizeof(char*));
     (*diagnoza)[0]=calloc(3,sizeof(char));
     *vysetrenie= calloc(1,sizeof(char*));
@@ -116,7 +117,8 @@ void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vyset
             if (*pocetZaznamov!=1){
                 *mena = realloc(*mena,sizeof(char*)*((*pocetZaznamov)));
                 (*mena)[(*pocetZaznamov)-1] = calloc(50,sizeof(char));
-                *rodneCislo = realloc(*rodneCislo,sizeof(long long int)*(*pocetZaznamov));
+                *rodneCislo = realloc(*rodneCislo,sizeof(char*)*(*pocetZaznamov));
+                (*rodneCislo)[(*pocetZaznamov)-1] = calloc(11,sizeof(char));
                 *diagnoza = realloc(*diagnoza,sizeof(char*)*(*pocetZaznamov));
                 (*diagnoza)[(*pocetZaznamov)-1] = calloc(3,sizeof(char));
                 *vysetrenie = realloc(*vysetrenie,sizeof(char*)*(*pocetZaznamov));
@@ -130,7 +132,7 @@ void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vyset
 
             fgets(line, 20, *zaznamyText);
             line[(int )strlen(line)-1]='\0';
-            (*rodneCislo)[(*pocetZaznamov)-1]=strtoll(line,&strol,10);
+            strcpy((*rodneCislo)[(*pocetZaznamov)-1],line);
 
             fgets(line, 20, *zaznamyText);
             line[(int )strlen(line)-1]='\0';
@@ -150,28 +152,19 @@ void n(char ***mena, long long int **rodneCislo, char ***diagnoza, char ***vyset
         }
         while (fgets(line, 20, *zaznamyText)!=NULL);
         *jeAlokovane=true;
-    for (int i = 0; i < (*pocetZaznamov); ++i) {
+
+    for (int i = 0; i < *pocetZaznamov; ++i) {
         printf("%s\n",(*mena)[i]);
     }
-    for (int i = 0; i < (*pocetZaznamov); ++i) {
-        printf("%lld\n",(*rodneCislo)[i]);
-    }
-    for (int i = 0; i < (*pocetZaznamov); ++i) {
+    for (int i = 0; i < *pocetZaznamov; ++i) {
         printf("%s\n",(*diagnoza)[i]);
     }
-    for (int i = 0; i < (*pocetZaznamov); ++i) {
-        printf("%s\n",(*vysetrenie)[i]);
+    for (int i = 0; i < *pocetZaznamov; ++i) {
+        printf("%s\n",(*rodneCislo)[i]);
     }
-    for (int i = 0; i < (*pocetZaznamov); ++i) {
-        printf("%f\n",(*vysledok)[i]);
-    }
-    for (int i = 0; i < (*pocetZaznamov); ++i) {
-        printf("%ld\n",(*datum)[i]);
-    }
-
 }
 
-void s(char ***vysetrenie,float **vysledok,long long **rodneCislo,int *pocetZaznamov,bool *jeAlokovane){
+void s(char ***vysetrenie,float **vysledok,char ***rodneCislo,int *pocetZaznamov,bool *jeAlokovane){
     int *rIndexy=calloc(1,sizeof(int));
     int pocetIndexov=0;
     if (!(*jeAlokovane)){
@@ -179,25 +172,129 @@ void s(char ***vysetrenie,float **vysledok,long long **rodneCislo,int *pocetZazn
         return;
     }
     else{
-        long long int rCislo;
+        char *rCislo=calloc(50,sizeof(char));
         printf("Nacitajte rodne cislo\n");
-        scanf("%lld",&rCislo);
+        scanf("%s",rCislo);
         for (int i = 0; i < (*pocetZaznamov); ++i) {
-            if ((*rodneCislo)[i]==rCislo){
+            if (strcmp((*rodneCislo)[i],rCislo)==0){
                 pocetIndexov++;
                 rIndexy[pocetIndexov-1]=i;
                 rIndexy=realloc(rIndexy,sizeof(int)*(pocetIndexov+1));
             }
         }
         if (pocetIndexov==0){
-            printf("Nenasiel sa zadany index");
+            printf("Nenaslo sa zadane rodne cislo");
             return;
         }
-        printf("Vysledky vysetreni, ktore boli vykonane pacientovi s rodnym cislom %lld su nasledovne:\n", rCislo);
+        printf("Vysledky vysetreni, ktore boli vykonane pacientovi s rodnym cislom %s su nasledovne:\n", rCislo);
         for (int i = 0; i < pocetIndexov; ++i) {
             printf("%s : %0.2f \n",(*vysetrenie)[rIndexy[i]],(*vysledok)[rIndexy[i]]);
         }
     }
+}
+
+void h(bool *jeAlokovane,char ***diagnoza,char ***rodneCislo,int *pocetZaznamov){
+    if (!(*jeAlokovane)){
+        printf("Polia nie su vytvorene\n");
+        return ;
+    }
+    int *dIndexy=calloc(1,sizeof(int));
+    int pocetIndexov=0;
+    char *stroll;
+    char *rCisloInString=calloc(11,sizeof(char));
+    char *diagnozaNacit = calloc(3,sizeof(char));
+    printf("Nacitajte diagnozu\n");
+    scanf("%s",diagnozaNacit);
+    for (int i = 0; i < (*pocetZaznamov); ++i) {
+        if (strcmp((*diagnoza)[i],diagnozaNacit)==0){
+            pocetIndexov++;
+            dIndexy[pocetIndexov-1]=i;
+            dIndexy=realloc(dIndexy,sizeof(int)*(pocetIndexov+1));
+        }
+    }
+    int *rokyM=calloc(1,sizeof(int));
+    int *rokyZ=calloc(1,sizeof(int));
+    char *ciselkoPohlaviaChar=calloc(1,sizeof(char));
+    int ciselkoPohlavia=0;
+    int iM=0;
+    int iZ=0;
+    int rok;
+    if (pocetIndexov==0){
+        printf("Nenasla sa zadana diagnoza");
+        return;
+    }
+    for (int i = 0; i < pocetIndexov; ++i) {
+        rCisloInString = (*rodneCislo)[dIndexy[i]];
+        ciselkoPohlaviaChar[0]=rCisloInString[2];
+        ciselkoPohlavia=atoi(ciselkoPohlaviaChar);
+        if (ciselkoPohlavia<2){
+            rCisloInString[2]='\0';
+            rok = atoi(rCisloInString);
+            if ((rok<100)&&(rok>20))rokyM[iM]=120-rok;
+            else rokyM[iM]=20-rok;
+            iM++;
+            rokyM=realloc(rokyM,sizeof(int)*(iM+1));
+        }
+        else{
+            rCisloInString[2]='\0';
+            rok = atoi(rCisloInString);
+            if ((rok<100)&&(rok>20))rokyZ[iZ]=120-rok;
+            else rokyZ[iZ]=20-rok;
+            iZ++;
+            rokyZ=realloc(rokyZ,sizeof(int)*(iZ+1));
+        }
+    }
+    for (int i = 0; i < iM; ++i) {
+        printf("%d\n",rokyM[i]);
+    }
+    int *najdene=malloc(sizeof(int)*1);
+    int iNajdene = 0;
+    int pocet=0;
+    bool naslo=false;
+    printf("Muzi\n");
+    for (int i = 0; i < iM; ++i) {
+        for (int j = 0; j < iNajdene; ++j) {
+            if (najdene[j]==rokyM[i])naslo=true;
+        }
+        if (!naslo){
+            for (int j = 0; j < iM; ++j) {
+                if (rokyM[i]==rokyM[j])pocet++;
+            }
+        }
+        if (pocet>0){
+            najdene[iNajdene]=rokyM[i];
+            iNajdene++;
+            najdene=realloc(najdene,sizeof(int)*(iNajdene+1));
+            printf("%d : %d\n",rokyM[i],pocet);
+            pocet=0;
+        }
+        naslo=false;
+    }
+    free(najdene);
+    najdene=malloc(sizeof(int)*1);
+    iNajdene = 0;
+    pocet=0;
+    naslo=false;
+    printf("Zeny\n");
+    for (int i = 0; i < iZ; ++i) {
+        for (int j = 0; j < iNajdene; ++j) {
+            if (najdene[j]==rokyZ[i])naslo=true;
+        }
+        if (!naslo){
+            for (int j = 0; j < iM; ++j) {
+                if (rokyZ[i]==rokyZ[j])pocet++;
+            }
+        }
+        if (pocet>0){
+            najdene[iNajdene]=rokyZ[i];
+            iNajdene++;
+            najdene=realloc(najdene,sizeof(int)*(iNajdene+1));
+            printf("%d : %d\n",rokyZ[i],pocet);
+            pocet=0;
+        }
+        naslo=false;
+    }
+
 }
 
 
@@ -205,7 +302,7 @@ void s(char ***vysetrenie,float **vysledok,long long **rodneCislo,int *pocetZazn
 int main(){
     FILE *zaznamyText = NULL;
     char **mena;
-    long long int *rodneCislo;
+    char **rodneCislo;
     char **diagnoza;
     char **vysetrenie;
     float *vysledok;
@@ -227,6 +324,9 @@ int main(){
         }
         if (vstup=='s'){
             s(&vysetrenie,&vysledok,&rodneCislo,&pocetZaznamov,&jeAlokovane);
+        }
+        if (vstup=='h'){
+            h(&jeAlokovane,&diagnoza,&rodneCislo,&pocetZaznamov);
         }
         if (vstup=='k'){
             break;

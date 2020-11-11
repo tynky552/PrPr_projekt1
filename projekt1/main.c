@@ -379,6 +379,68 @@ void p(char ***mena, char ***rodneCislo, char ***diagnoza, char ***vysetrenie, f
     *zaznamyText=fopen("pacienti.txt","r");
 }
 
+void z(char ***mena, char ***vysetrenie, float **vysledok, long int **datum, int *pocetZaznamov, bool *jeAlokovane){
+    if (!(*jeAlokovane)){
+        printf("Polia nie su vytvorene\n");
+        return;
+    }
+
+    long int skorsiDatum,neskorsiDatum;
+    char *vysetrenieNacit=calloc(50,sizeof(char));
+    printf("Nacitajte pociatocny datum\n");
+    scanf("%ld",&skorsiDatum);
+    printf("Nacitajte koncovy datum\n");
+    scanf("%ld",&neskorsiDatum);
+    if (skorsiDatum>neskorsiDatum){
+        printf("Koncovy datum sa nachadza pred pociatocnym");
+        return;
+    }
+    printf("Nacitajte vysetrenie\n");
+    scanf("%s",vysetrenieNacit);
+
+    char *menoNajviac=calloc(50,sizeof(char));
+    char *menoStred=calloc(50,sizeof(char));
+    char *menoNajmenej=calloc(50,sizeof(char));
+    float vysledokNajviac=0,vysledokStred=0,vysledokNajmenej=0;
+    bool nasielZaznam=false;
+    for (int i = 0; i < *pocetZaznamov; ++i) {
+        if ( ((*datum)[i]>=skorsiDatum)&&((*datum)[i]<=neskorsiDatum) ){
+            if (strcmp(vysetrenieNacit,(*vysetrenie)[i])==0){
+                if ((*vysledok)[i]>vysledokNajviac){
+                    vysledokNajmenej=vysledokStred;
+                    vysledokStred=vysledokNajviac;
+                    vysledokNajviac=(*vysledok)[i];
+                    menoNajmenej=menoStred;
+                    menoStred=menoNajviac;
+                    menoNajviac=(*mena)[i];
+                }
+                else if ((*vysledok)[i]>vysledokStred){
+                    vysledokNajmenej=vysledokStred;
+                    vysledokStred=(*vysledok)[i];
+                    menoNajmenej=menoStred;
+                    menoStred=(*mena)[i];
+                }
+                else if((*vysledok)[i]>vysledokNajmenej){
+                    vysledokNajmenej=(*vysledok)[i];
+                    menoNajmenej=(*mena)[i];
+                }
+                nasielZaznam=true;
+            }
+        }
+        if ((*datum)[i]>neskorsiDatum)break;
+    }
+    if (!nasielZaznam){
+        printf("Nenasiel sa zaznam pre zadane vysetrenie\n");
+        return;
+    }
+    printf("Traja pacienti s najvyssimi hodnotami %s za obdobie %ld - %ld su: (namerana hodnota v zatvorke)\n",vysetrenieNacit,skorsiDatum,neskorsiDatum);
+    printf("%s (%g)\n",menoNajviac,vysledokNajviac);
+    if (vysledokStred==0)printf("Druhy zaznam sa nenasiel\n");
+    else printf("%s (%g)\n",menoStred,vysledokStred);
+    if (vysledokNajmenej==0)printf("Treti zaznam sa nenasiel");
+    else printf("%s (%g)",menoNajmenej,vysledokNajmenej);
+}
+
 
 
 int main(){
@@ -412,6 +474,9 @@ int main(){
         }
         if (vstup=='p'){
             p(&mena, &rodneCislo, &diagnoza, &vysetrenie, &vysledok, &datum, &pocetZaznamov, &jeAlokovane, &zaznamyText);
+        }
+        if (vstup=='z'){
+            z(&mena, &vysetrenie, &vysledok, &datum, &pocetZaznamov, &jeAlokovane);
         }
         if (vstup=='k'){
             break;

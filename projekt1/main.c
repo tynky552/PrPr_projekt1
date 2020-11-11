@@ -302,9 +302,10 @@ void p(char ***mena, char ***rodneCislo, char ***diagnoza, char ***vysetrenie, f
         printf("Polia nie su vytvorene\n");
         return;
     }
-    FILE *tempFile;
-    tempFile = fopen("tempPacienti.txt" , "a");
-    if (tempFile == NULL){
+
+    fclose(*zaznamyText);
+    fopen("pacienti.txt","w");
+    if (*zaznamyText == NULL){
         printf("Neotvorilo temp subor");
     }
     char *rCisloNacit=calloc(10,sizeof(char));
@@ -340,43 +341,55 @@ void p(char ***mena, char ***rodneCislo, char ***diagnoza, char ***vysetrenie, f
     (*vysledok)[spravnyIndex]=vysledokVysetrenia;
 
     char *line=calloc(50,sizeof(char));
+    char *linePreCisla=calloc(10,sizeof(char));
     char enter='\n';
     for (int i = 0; i < (*pocetZaznamov); ++i) {
         line = (*mena)[i];
         strncat(line,&enter,1);
-        fputs(line, tempFile);
+        fputs(line, *zaznamyText);
+        line[strlen(line)-1]='\0';
+        (*mena)[i]=line;
 
         line = (*rodneCislo)[i];
         strncat(line,&enter,1);
-        fputs(line, tempFile);
+        fputs(line, *zaznamyText);
+        line[strlen(line)-1]='\0';
+        (*rodneCislo)[i]=line;
 
         line = (*diagnoza)[i];
         strncat(line,&enter,1);
-        fputs(line, tempFile);
+        fputs(line, *zaznamyText);
+        line[strlen(line)-1]='\0';
+        (*diagnoza)[i]=line;
 
         line = (*vysetrenie)[i];
         strncat(line,&enter,1);
-        fputs(line, tempFile);
+        fputs(line, *zaznamyText);
+        line[strlen(line)-1]='\0';
+        (*vysetrenie)[i]=line;
 
-        sprintf(line,"%g",(*vysledok)[i]);
-        strncat(line,&enter,1);
-        fputs(line, tempFile);
+        sprintf(linePreCisla,"%g",(*vysledok)[i]);
+        strncat(linePreCisla,&enter,1);
+        fputs(linePreCisla, *zaznamyText);
 
-        sprintf(line,"%ld",(*datum)[i]);
-        strncat(line,&enter,1);
-        fputs(line, tempFile);
+        sprintf(linePreCisla,"%ld",(*datum)[i]);
+        strncat(linePreCisla,&enter,1);
+        fputs(linePreCisla, *zaznamyText);
 
         if (i!=(*pocetZaznamov)-1) {
             line = "\n";
-            fputs(line, tempFile);
+            fputs(line, *zaznamyText);
         }
     }
-    fclose(tempFile);
     fclose(*zaznamyText);
-    remove("pacienti.txt");
-    rename("tempPacienti.txt","pacienti.txt");
-    printf("Pacientovi s rodnym cislom %s bol zmeneny vysledok vysetrenia %s z povodnej hodnoty %.2f na novu hodnotu %.2f.",(*rodneCislo)[spravnyIndex],vysetrenieNacit,vysledokPredosli,vysledokVysetrenia);
-    *zaznamyText=fopen("pacienti.txt","r");
+    fopen("pacienti.txt","r");
+    free(rCisloNacit);
+    free(vysetrenieNacit);
+    free(line);
+//    remove("pacienti.txt");
+//    rename("tempPacienti.txt","pacienti.txt");
+//    printf("Pacientovi s rodnym cislom %s bol zmeneny vysledok vysetrenia %s z povodnej hodnoty %.2f na novu hodnotu %.2f.",(*rodneCislo)[spravnyIndex],vysetrenieNacit,vysledokPredosli,vysledokVysetrenia);
+//    *zaznamyText=fopen("pacienti.txt","r");
 }
 
 void z(char ***mena, char ***vysetrenie, float **vysledok, long int **datum, int *pocetZaznamov, bool *jeAlokovane){
